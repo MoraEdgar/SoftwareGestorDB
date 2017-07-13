@@ -1,0 +1,930 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package GUI;
+
+import Datos.Campos;
+import Logica.CreadorTabla;
+import Logica.EliminadorTabla;
+import Logica.GestorArchivo;
+import static Logica.GestorArchivo.LongitudesCampos;
+import Logica.GestorRegistro;
+import java.awt.Color;
+import java.awt.Font;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+
+/**
+ Programacion 3
+ Realizado por: Juan Cobos, Adrian Flores, Edgar Mora
+ * 
+ */
+public class Principal extends javax.swing.JFrame {
+
+    private String nombreTabla;
+    private String campos;
+    private DefaultStyledDocument doc;
+    private ListSelectionListener lslBoton;
+    private ArrayList<String> hist = new ArrayList();
+    public static String historial = " ";
+    public static String historialEjecucion=" ";
+    public static String time="";
+
+    /**
+     * Creates new form Principal
+     */
+    public Principal() throws IOException {
+        reconocerpalabras();
+        initComponents();
+        
+                ((JPanel)getContentPane()).setOpaque(false); ImageIcon uno=new ImageIcon(this.getClass().getResource("/imagenes/fond.jpg")); JLabel fondo= new JLabel(); fondo.setIcon(uno); getLayeredPane().add(fondo,JLayeredPane.FRAME_CONTENT_LAYER); fondo.setBounds(0,0,uno.getIconWidth(),uno.getIconHeight());
+
+        //setJpane();
+        generarTabla();
+        setLocationRelativeTo(null);
+        //txtHistorial.setText(historial);
+        btnMostrarTab.setEnabled(false);
+        fondoPane();
+    }
+
+    public void fondoPane(){
+        UIManager UI=new UIManager();
+        UI.put("OptionPane.background", Color.gray);
+        UI.put("Panel.background", Color.gray);
+        UI.put("OptionPane.messageForeground", Color.white);
+    }
+    public void historial() {
+        String aux = "";
+        for (int i = 0; i < hist.size(); i++) {
+            aux = aux + hist.get(i);
+        }
+        //txtHistorial.setText(aux);
+    }
+
+    public void setHistorial(String text) {
+        historial = text;
+        //txtHistorial.setText(historial);
+    }
+
+    public void generarTabla() throws FileNotFoundException, IOException {
+        DefaultTableModel modelo = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        Object[] tabla = new Object[3];
+        tabla[0] = "Nombre";
+        tabla[1] = "Número de Registros";
+        tabla[2] = "Campos";
+
+        modelo.setColumnIdentifiers(tabla);
+        //revisar xd
+        List<Object[]> listaTablas = GestorArchivo.crearSalida();
+
+        if (listaTablas == null || listaTablas.isEmpty()) {
+            this.tSalida.setModel(modelo);
+            return;
+        }
+
+        for (int i = 0; i < listaTablas.size(); i++) {
+            modelo.addRow(listaTablas.get(i));
+        }
+
+        this.tSalida.getSelectionModel().removeListSelectionListener(lslBoton);
+        this.tSalida.setModel(modelo);
+
+        this.lslBoton = new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    nombreTabla = (String) tSalida.getModel().getValueAt(
+                            tSalida.getSelectedRow(), 0);
+                    campos = (String) tSalida.getModel().getValueAt(
+                            tSalida.getSelectedRow(), 2);
+                    btnMostrarTab.setEnabled(true);
+                }
+            }
+        };
+
+        this.tSalida.getSelectionModel().addListSelectionListener(lslBoton);
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jLabel4 = new javax.swing.JLabel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        txtEntradaComando = new javax.swing.JTextPane(doc);
+        btnMostrarTab = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tSalida = new javax.swing.JTable();
+        tiempos = new javax.swing.JLabel();
+        btEjecutar = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
+        ComandCrearTab = new javax.swing.JMenuItem();
+        ComandoElimTab = new javax.swing.JMenuItem();
+        ComandoModTab = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        ComandoCrearReg = new javax.swing.JMenuItem();
+        ComandoModiReg = new javax.swing.JMenuItem();
+        ComandoElimReg = new javax.swing.JMenuItem();
+        ComandoSelec = new javax.swing.JMenuItem();
+        ComandoJoin = new javax.swing.JMenuItem();
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(jTable1);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Gestor SQL UC");
+        setLocationByPlatform(true);
+        setMinimumSize(new java.awt.Dimension(820, 560));
+        setSize(new java.awt.Dimension(1090, 542));
+        getContentPane().setLayout(null);
+
+        jLabel4.setFont(new java.awt.Font("Imprint MT Shadow", 0, 24)); // NOI18N
+        jLabel4.setText("BASE DE DATOS");
+        getContentPane().add(jLabel4);
+        jLabel4.setBounds(290, 10, 430, 50);
+
+        txtEntradaComando.setBackground(new java.awt.Color(204, 204, 204));
+        txtEntradaComando.setFont(new java.awt.Font("Lucida Fax", 1, 13)); // NOI18N
+        txtEntradaComando.setCaretColor(new java.awt.Color(255, 255, 255));
+        jScrollPane6.setViewportView(txtEntradaComando);
+
+        getContentPane().add(jScrollPane6);
+        jScrollPane6.setBounds(50, 90, 740, 30);
+
+        btnMostrarTab.setBackground(new java.awt.Color(204, 204, 204));
+        btnMostrarTab.setFont(new java.awt.Font("Imprint MT Shadow", 0, 14)); // NOI18N
+        btnMostrarTab.setText("MOSTARR CAMPO");
+        btnMostrarTab.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        btnMostrarTab.setMinimumSize(new java.awt.Dimension(105, 19));
+        btnMostrarTab.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMostrarTabActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnMostrarTab);
+        btnMostrarTab.setBounds(380, 440, 170, 40);
+
+        jButton1.setBackground(new java.awt.Color(204, 204, 204));
+        jButton1.setFont(new java.awt.Font("Imprint MT Shadow", 0, 14)); // NOI18N
+        jButton1.setText("HISTORIAL");
+        jButton1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton1);
+        jButton1.setBounds(140, 440, 160, 40);
+
+        jScrollPane3.setBackground(new java.awt.Color(51, 51, 51));
+        jScrollPane3.setForeground(new java.awt.Color(51, 51, 51));
+        jScrollPane3.getViewport().setBackground(Color.DARK_GRAY);
+
+        tSalida.setBackground(new java.awt.Color(0, 0, 0));
+        tSalida.setFont(new java.awt.Font("Lucida Fax", 1, 14)); // NOI18N
+        tSalida.setForeground(new java.awt.Color(255, 255, 255));
+        tSalida.setGridColor(new java.awt.Color(255, 255, 255));
+        jScrollPane3.setViewportView(tSalida);
+
+        getContentPane().add(jScrollPane3);
+        jScrollPane3.setBounds(50, 140, 620, 290);
+
+        tiempos.setBackground(new java.awt.Color(204, 204, 204));
+        tiempos.setFont(new java.awt.Font("MS Reference Sans Serif", 1, 12)); // NOI18N
+        tiempos.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        tiempos.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        tiempos.setDoubleBuffered(true);
+        tiempos.setOpaque(true);
+        getContentPane().add(tiempos);
+        tiempos.setBounds(680, 220, 110, 30);
+
+        btEjecutar.setBackground(new java.awt.Color(204, 204, 204));
+        btEjecutar.setFont(new java.awt.Font("Imprint MT Shadow", 1, 14)); // NOI18N
+        btEjecutar.setText("EJECUTAR");
+        btEjecutar.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 2, 2, 2, new java.awt.Color(0, 0, 0)));
+        btEjecutar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btEjecutar.setPreferredSize(new java.awt.Dimension(100, 100));
+        btEjecutar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btEjecutarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btEjecutar);
+        btEjecutar.setBounds(680, 140, 110, 40);
+
+        jLabel1.setFont(new java.awt.Font("Yu Gothic", 1, 14)); // NOI18N
+        jLabel1.setText("Tiempo");
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(710, 190, 60, 30);
+
+        jLabel5.setFont(new java.awt.Font("Imprint MT Shadow", 0, 18)); // NOI18N
+        jLabel5.setText("Ingrese Comando");
+        getContentPane().add(jLabel5);
+        jLabel5.setBounds(50, 60, 140, 30);
+
+        jMenuBar1.setBackground(new java.awt.Color(51, 51, 51));
+
+        jMenu1.setForeground(new java.awt.Color(255, 255, 255));
+        jMenu1.setText("Comandos");
+        jMenu1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+
+        jMenu3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/images.jpg"))); // NOI18N
+        jMenu3.setText("TABLAS");
+
+        ComandCrearTab.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/new-doc-128.png"))); // NOI18N
+        ComandCrearTab.setText("CREAR TABLA ...");
+        ComandCrearTab.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ComandCrearTabActionPerformed(evt);
+            }
+        });
+        jMenu3.add(ComandCrearTab);
+
+        ComandoElimTab.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ic_delete_48px-128.png"))); // NOI18N
+        ComandoElimTab.setText("ELIMINAR TABLA ...");
+        ComandoElimTab.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ComandoElimTabActionPerformed(evt);
+            }
+        });
+        jMenu3.add(ComandoElimTab);
+
+        ComandoModTab.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/edit_modify_icon-icons.com_49882.png"))); // NOI18N
+        ComandoModTab.setText("MODIFICAR TABLA ...");
+        ComandoModTab.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ComandoModTabActionPerformed(evt);
+            }
+        });
+        jMenu3.add(ComandoModTab);
+
+        jMenu1.add(jMenu3);
+
+        jMenu2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/tests-icon.png"))); // NOI18N
+        jMenu2.setText("REGISTROS");
+
+        ComandoCrearReg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/new-doc-128.png"))); // NOI18N
+        ComandoCrearReg.setText("CREAR REGISTRO ...");
+        ComandoCrearReg.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ComandoCrearRegActionPerformed(evt);
+            }
+        });
+        jMenu2.add(ComandoCrearReg);
+
+        ComandoModiReg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/edit_modify_icon-icons.com_49882.png"))); // NOI18N
+        ComandoModiReg.setText("MODIFICAR REGISTRO ...");
+        ComandoModiReg.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ComandoModiRegActionPerformed(evt);
+            }
+        });
+        jMenu2.add(ComandoModiReg);
+
+        ComandoElimReg.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ic_delete_48px-128.png"))); // NOI18N
+        ComandoElimReg.setText("ELIMINAR REGISTRO ...");
+        ComandoElimReg.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ComandoElimRegActionPerformed(evt);
+            }
+        });
+        jMenu2.add(ComandoElimReg);
+
+        jMenu1.add(jMenu2);
+
+        ComandoSelec.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/push-512.png"))); // NOI18N
+        ComandoSelec.setText("SELECCIONAR DE ...");
+        ComandoSelec.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ComandoSelecActionPerformed(evt);
+            }
+        });
+        jMenu1.add(ComandoSelec);
+
+        ComandoJoin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/686917-link_connection_chains_network_relationship_tie_attach_attachment_join_bond-256.png"))); // NOI18N
+        ComandoJoin.setText("UNIR ...");
+        ComandoJoin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ComandoJoinActionPerformed(evt);
+            }
+        });
+        jMenu1.add(ComandoJoin);
+
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void ComandCrearTabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComandCrearTabActionPerformed
+        // TODO add your handling code here:
+        txtEntradaComando.setText("CREAR TABLA tabla1 CAMPOS campo1,campo2 CLAVE campo1 LONGITUD 10,20");
+    }//GEN-LAST:event_ComandCrearTabActionPerformed
+
+    private void ComandoJoinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComandoJoinActionPerformed
+        // TODO add your handling code here:
+        txtEntradaComando.setText("UNIR tabla1,tabla2 POR nombre_campo=Algo");
+    }//GEN-LAST:event_ComandoJoinActionPerformed
+
+    private void ComandoElimTabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComandoElimTabActionPerformed
+        // TODO add your handling code here:
+        txtEntradaComando.setText("ELIMINAR TABLA tabla1");
+    }//GEN-LAST:event_ComandoElimTabActionPerformed
+
+    private void ComandoModTabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComandoModTabActionPerformed
+        // TODO add your handling code here:
+        txtEntradaComando.setText("MODIFICAR TABLA tabla1 CAMPO nombre_campo POR nombre_campo");
+    }//GEN-LAST:event_ComandoModTabActionPerformed
+
+    private void ComandoCrearRegActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComandoCrearRegActionPerformed
+        // TODO add your handling code here:
+        txtEntradaComando.setText("CREAR REGISTRO tabla1 VALOR nombreCampo1,nombreCampo2....");
+    }//GEN-LAST:event_ComandoCrearRegActionPerformed
+
+    private void ComandoModiRegActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComandoModiRegActionPerformed
+        // TODO add your handling code here:
+        txtEntradaComando.setText("MODIFICAR REGISTRO tabla1 CLAVE valorCampoClave CAMPO campo POR valor_campo_nuevo");        
+    }//GEN-LAST:event_ComandoModiRegActionPerformed
+
+    private void ComandoElimRegActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComandoElimRegActionPerformed
+        // TODO add your handling code here:
+        txtEntradaComando.setText("ELIMINAR REGISTRO tabla1 CLAVE valorCampoClave");        
+    }//GEN-LAST:event_ComandoElimRegActionPerformed
+
+    private void ComandoSelecActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComandoSelecActionPerformed
+        // TODO add your handling code here:
+        txtEntradaComando.setText("SELECCIONAR DE tabla1 DONDE nombre_campo=Algo");
+    }//GEN-LAST:event_ComandoSelecActionPerformed
+
+    private void btnMostrarTabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMostrarTabActionPerformed
+        // TODO add your handling code here:
+        MostrarTabla mostrarTabla = new MostrarTabla(new javax.swing.JFrame(), true,nombreTabla,3,null,null,null);
+        try {
+            long time_start = System.currentTimeMillis();
+            mostrarTabla.generarTabla4(campos,nombreTabla);
+            long time_end = System.currentTimeMillis();
+                    long real=time_end-time_start;
+                    String Difer = Long.toString(real);
+                    
+                    time=Difer;
+                    tiempos.setText(time+"milsec");
+        } catch (IOException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        mostrarTabla.setVisible(true);
+    }//GEN-LAST:event_btnMostrarTabActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        Historial s =new Historial();
+        s.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btEjecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btEjecutarActionPerformed
+        String comando = txtEntradaComando.getText();
+
+        try {
+            if (comando.contains("ELIMINAR TABLA")) {
+
+                if (EliminadorTabla.eliminarTablaArchivo((String) comando.subSequence(15, comando.length()))) {
+                    //GestorArchivo.remover((String) comando.subSequence(15, comando.length()));
+                    long time_start = System.currentTimeMillis();
+          
+                    GestorRegistro.EliminarRegistros(comando.substring(15, comando.length()));
+                    GestorArchivo.EliminarArchivo(comando.substring(15, comando.length()));
+                    historial += "Se ha eliminado la tabla " + (String) comando.subSequence(15, comando.length()) + "\n";
+                    
+                    CreadorTabla.serializar_CreadorTabla();
+                    long time_end = System.currentTimeMillis();
+                    long real=time_end-time_start;
+                    String Difer = Long.toString(real);
+                    time=Difer;
+                    tiempos.setText(time+"milsec");
+                    historialEjecucion+="Tiempo eliminacion de tabla:"+" "+Difer+"milsec"+"\n";
+                    tiempos.setText(time+"milsec");
+                    generarTabla();
+                    GestorRegistro.serializar_GestorRegistro();
+                    GestorArchivo.serializarGestorArchivo();
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se ha eliminado el archivo");
+                }
+
+            } else if (comando.contains("CREAR TABLA")) {
+
+                if (!comando.contains(" CLAVE ") && !comando.contains(" CAMPOS ") || comando.length() <= (comando.indexOf(" CAMPOS ") + " CAMPOS ".length())) {
+                    JOptionPane.showMessageDialog(null, "No se ha especificado los campos");
+                } else {
+                      long time_start = System.currentTimeMillis();
+                    if (GestorArchivo.crearTabla((String) comando.subSequence(12, comando.length()))) {
+                        JOptionPane.showMessageDialog(null, "Ya existe una tabla con ese nombre");
+
+                    } else {
+                        //txtHistorial.append("Se ha creado la tabla " + (String) comando.subSequence(12, comando.indexOf(" CAMPOS ")) + "\n");
+                        //hist.add("Se ha creado la tabla " + (String) comando.subSequence(12, comando.indexOf(" CAMPOS ")) + "\n");
+                        historial += "Se ha creado la tabla " + (String) comando.subSequence(12, comando.indexOf(" CAMPOS ")) + "\n";
+                        
+                        GestorArchivo.serializarGestorArchivo();
+                        long time_end = System.currentTimeMillis();
+                    long real=time_end-time_start;
+                    String Difer = Long.toString(real);
+                    historialEjecucion+="Tiempo creacion de tabla:"+" "+Difer+"milsec"+"\n";
+                    time=Difer;
+                     tiempos.setText(time+"milsec");
+                    }
+                    generarTabla();
+                }
+
+            } else if (comando.contains("MODIFICAR TABLA")) {
+
+                if (!comando.contains(" CAMPO ") || !comando.contains(" POR ") || comando.length() <= (comando.indexOf(" CAMPO ") + " CAMPO ".length())) {
+                    JOptionPane.showMessageDialog(null, "No se ha especificado los campos");
+                } else {
+                    //MODIFICAR TABLA compania CAMPO nombres POR informacion;
+                     long time_start = System.currentTimeMillis();
+                    String nombreTabla = (String) (comando.subSequence(16, comando.indexOf(" CAMPO ")));
+                    String campo = (String) (comando.subSequence(comando.indexOf(" CAMPO ") + 7, comando.indexOf(" POR ")));
+                    String actual = (String) (comando.subSequence(comando.lastIndexOf(" POR ") + 5, comando.length()));
+                    System.out.println(nombreTabla + "---" + campo + "---" + actual);
+                    if (confirmarCambio(nombreTabla)) {
+                        if (cambiarCampos(nombreTabla, campo, actual)) {
+
+                      historial += "Se ha Modificado la tabla " + (String) comando.subSequence(16, comando.indexOf(" CAMPO ")) + "\n";
+                    long time_end = System.currentTimeMillis();
+                    long real=time_end-time_start;
+                    String Difer = Long.toString(real);
+                    historialEjecucion+="Tiempo modificacion de tabla:"+" "+Difer+"milsec"+"\n";
+                    time=Difer;
+                   
+                    
+                    
+                            guardarHistorial();
+                            Principal pr = new Principal();
+                            pr.generarTabla();
+                            pr.setVisible(true);
+                            this.setVisible(false);
+                     tiempos.setText(time+"milsec");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "No se ha encontrada el campo el cual quiere cambiar");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No se puede modificar el nombre de los campos de una tabla que ya tiene registros");
+                    }
+
+                }
+
+            } else if (comando.contains("CREAR REGISTRO")) {
+
+                if (!comando.contains(" VALOR ") || comando.length() <= (comando.indexOf(" VALOR ") + " VALOR ".length())) {
+                    JOptionPane.showMessageDialog(null, "Comando incorrecto");
+                } else {
+                    String nombreTabla = (String) (comando.subSequence(15, comando.indexOf(" VALOR ")));
+                    String campos = (String) (comando.subSequence(comando.indexOf(" VALOR ") + 7, comando.length()));
+                    System.out.println(nombreTabla + "--" + campos);
+                    long time_start = System.currentTimeMillis();
+                    GestorRegistro registro = new GestorRegistro();
+                    if (registro.crearTabla(comando, nombreTabla)) {
+                        historial += "Se ha creado un nuevo Registro en la tabla " + (String) comando.subSequence(15, comando.indexOf(" VALOR ")) + "\n";
+                        long time_end = System.currentTimeMillis();
+                        long real=time_end-time_start;
+                        String Difer = Long.toString(real);
+                        historialEjecucion+="Tiempo creacion Registro:"+" "+Difer+"milsec"+"\n";
+                         time=Difer;
+                         tiempos.setText(time+"milsec");
+                        generarTabla();
+                    }
+                }
+
+            } else if (comando.contains("MODIFICAR REGISTRO")) {
+
+                if (!comando.contains(" CLAVE ") || !comando.contains(" CAMPO ") || !comando.contains(" POR ")
+                    || comando.length() <= (comando.indexOf(" POR ") + " POR ".length())) {
+                    JOptionPane.showMessageDialog(null, "No se ha especificado algun comando");
+                } else {
+                    long time_start = System.currentTimeMillis();
+                    String nombreTabla = comando.substring(19, comando.indexOf(" CLAVE "));
+                    String clave = comando.substring(comando.lastIndexOf(" CLAVE ") + 7, comando.indexOf(" CAMPO "));
+                    String campoAnt = comando.substring(comando.lastIndexOf(" CAMPO ") + 7, comando.indexOf(" POR "));
+                    String campoNuev = comando.substring(comando.lastIndexOf(" POR ") + 5, comando.length());
+                    System.out.println("NOM: " + nombreTabla + " CLAV: " + clave + " ANT: " + campoAnt + " NUEV: " + campoNuev);
+                    if (!GestorRegistro.esRepetidoMod(nombreTabla, clave, campoNuev)) {
+                        if (GestorRegistro.cambiarRegistro(nombreTabla, clave, campoAnt, campoNuev)) {
+                            GestorRegistro.cambiarRegistroArchivo(nombreTabla);
+                            /////////////////////////////////////////
+                            GestorRegistro.serializar_GestorRegistro();
+                            /////////////////////////////////////////
+                            historial += "Se ha modificado el registro " + (String) comando.subSequence(18, comando.indexOf(" CLAVE ")) + "\n";
+                            long time_end = System.currentTimeMillis();
+                            long real=time_end-time_start;
+                            String Difer = Long.toString(real);
+                            historialEjecucion+="Tiempo modificacion Registro:"+" "+Difer+"milsec"+"\n";
+                             time=Difer;
+                             tiempos.setText(time+"milsec");
+                        }else{
+                            JOptionPane.showMessageDialog(null, "No se pudo realizar el cambio, comprueba valores");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "El campo nuevo no puede reemplazar a una clave ya existente");
+                    }
+                }
+
+            } else if (comando.contains("ELIMINAR REGISTRO ")) {
+                if (!comando.contains(" CLAVE ")
+                    || comando.length() <= (comando.indexOf(" CLAVE ") + " CLAVE ".length())) {
+                    JOptionPane.showMessageDialog(null, "Comando ELIMINAR incompleto");
+                } else {
+                    String nombreTabla = comando.substring(18, comando.indexOf(" CLAVE "));
+                    String borrarReg = comando.substring(comando.indexOf(" CLAVE ") + 7, comando.length());
+                    System.out.println("Nom; " + nombreTabla + "Reg: " + borrarReg);
+                    long time_start = System.currentTimeMillis();
+                    if (GestorRegistro.modificarReg(nombreTabla, borrarReg)) {
+                        GestorRegistro.cambiarRegistroArchivo(nombreTabla);
+                        GestorRegistro.contarRegistros(nombreTabla);
+                        GestorRegistro.contarRegistros(nombreTabla);
+                        GestorRegistro.actualizarTabla(nombreTabla);
+                        /////////////////////////////////////////
+                        GestorRegistro.serializar_GestorRegistro();
+                        /////////////////////////////////////////
+                        generarTabla();
+                        historial += "Se ha eliminado el Registro de la tabla " + nombreTabla + "\n";
+                        long time_end = System.currentTimeMillis();
+                        long real=time_end-time_start;
+                        String Difer = Long.toString(real);
+                        historialEjecucion+="Tiempo eliminacion Registro:"+" "+Difer+"milsec"+"\n";
+                         time=Difer;
+                         tiempos.setText(time+"milsec");
+                    }else{
+                        JOptionPane.showMessageDialog(null, "No se ha podido eliminar el Registro, revise los valores");
+                    }
+                }
+            } else if (comando.contains("SELECCIONAR DE ")) {
+                if (!comando.contains(" DONDE ")
+                    || comando.length() <= (comando.indexOf(" DONDE ") + " DONDE ".length())) {
+                    JOptionPane.showMessageDialog(null, "Comando SELECCIONAR INCOMPLETO");
+                } else {
+                    String nombreTabla = comando.substring(15, comando.indexOf(" DONDE "));
+                    String nombreCampo = comando.substring(comando.indexOf(" DONDE ") + 7, comando.indexOf("="));
+                    String valorCampo = comando.substring(comando.indexOf("=") + 1, comando.length());
+                    System.out.println("Nom; " + nombreTabla + " Reg: " + nombreCampo + " valor: " + valorCampo);
+                    if (GestorRegistro.seleccionarDe(nombreTabla, nombreCampo, valorCampo)) {
+                        long time_start = System.currentTimeMillis();
+                        System.out.println("entro sel");
+                        MostrarTabla t = new MostrarTabla(this, rootPaneCheckingEnabled, nombreTabla, 1,null,null,valorCampo);
+                        t.generarTabla1(nombreTabla);
+                        t.setVisible(true);
+                        /////////////////////////////////////////
+                        GestorRegistro.serializar_GestorRegistro();
+                        /////////////////////////////////////////
+                        historial += "Se ha mostrado la tabla : " + nombreTabla + ", con los registros con los campos : " + nombreCampo + "=" + valorCampo + "\n";
+                        long time_end = System.currentTimeMillis();
+                        long real=time_end-time_start;
+                        String Difer = Long.toString(real);
+                        historialEjecucion+="Tiempo para buscar:"+" "+Difer+"milsec"+"\n";
+                         time=Difer;
+                         tiempos.setText(time+"milsec");
+
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Tabla no encontrada o campo ingresado no existe");
+                    }
+
+                }
+            } else if (comando.contains("UNIR ")) {
+                if (!comando.contains(" POR ")
+                    || comando.length() <= (comando.indexOf(" POR ") + " POR ".length())) {
+                    JOptionPane.showMessageDialog(null, "Comando UNIR incompleto");
+                } else {
+                    String nombreTabla1 = comando.substring(5, comando.indexOf(","));
+                    String nombreTabla2 = comando.substring(comando.indexOf(",") + 1, comando.indexOf(" POR "));
+
+                    String nombreCampo = comando.substring(comando.indexOf(" POR ") + 5, comando.indexOf("="));
+
+                    String valorCampo = comando.substring(comando.indexOf("=") + 1, comando.length());
+                    System.out.println("Nom1; " + nombreTabla1 + " nombre2: " + nombreTabla2 + " nombreCAM: " + nombreCampo + " valor: " + valorCampo);
+                    if (GestorRegistro.unirPor(nombreTabla1, nombreCampo, valorCampo)) {
+                        long time_start = System.currentTimeMillis();
+                        if (GestorRegistro.unirPor(nombreTabla2, nombreCampo, valorCampo)) {
+                            System.out.println("entro unir");
+                            MostrarTabla t = new MostrarTabla(this, rootPaneCheckingEnabled, nombreTabla, 2,nombreTabla1,nombreTabla2,valorCampo);
+                            t.generarTabla2(nombreTabla1, nombreTabla2);
+
+                            String nombreUnir = nombreTabla1 + "," + nombreTabla2 + "," + valorCampo;
+
+                            GestorRegistro.unirArchivo(nombreUnir);
+
+                            t.setVisible(true);
+                            /////////////////////////////////////////
+                            GestorRegistro.serializar_GestorRegistro();
+                            /////////////////////////////////////////
+                            historial += "Se ha mostrado la tabla : Union" + nombreTabla1+" con "+nombreTabla2 +", con los registros con los campos : " + nombreCampo + "=" + valorCampo + "\n";
+                             long time_end = System.currentTimeMillis();
+                            long real=time_end-time_start;
+                            String Difer = Long.toString(real);
+                            historialEjecucion+="Tiempo para unir Tablas:"+" "+Difer+"milsec"+"\n";
+                             time=Difer;
+                             tiempos.setText(time+"milsec");
+                        }else{
+                            JOptionPane.showMessageDialog(null, "No se han encontrado coincidencias, segunda tabla");
+                        }
+
+                    }else{
+                        JOptionPane.showMessageDialog(null, "No se han encontrado coincidencias, primera tabla");
+                    }
+
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "No se ha especificado la acción(CREAR TABLA/ELIMINAR TABLA)");
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btEjecutarActionPerformed
+
+    private boolean confirmarCambio(String nombreTab) throws FileNotFoundException, IOException {
+        boolean retorno = false;
+        String line;
+        String datos[];
+        FileReader fr = new FileReader("archivos/META_BD.csv");
+        BufferedReader br = new BufferedReader(fr);
+        line = "";
+        while ((line = br.readLine()) != null) {
+            System.out.println("linea->>> "+line);
+            datos = line.split(",");
+            if (datos[0].equals("0") && datos[1].equals(nombreTab) && datos[2].equals("0")) {
+                System.out.println("es posible");
+                retorno = true;
+            }
+        }
+        br.close();
+        fr.close();
+        return retorno;
+
+    }
+
+    private boolean cambiarCampos(String nomTabla, String campo, String nuevo) throws IOException {
+
+        Iterator<Campos> iterador = LongitudesCampos.iterator();
+        boolean band1 = false;
+
+        while (iterador.hasNext()) {
+            Campos lineIterador = iterador.next();
+            if (lineIterador.getNombre().equals(nomTabla) && lineIterador.getCamp().equals(campo)) {
+                band1 = true;
+            }
+        }
+        if (band1) {
+            String line = null;
+            String[] campos;
+            RandomAccessFile file = new RandomAccessFile("archivos/" + nomTabla + ".csv", "rw");
+            line = file.readLine();
+            campos = line.split(",");
+            int longitud = 0;
+            while (longitud < campos.length) {
+                if (campos[longitud].equals(campo)) {
+                    campos[longitud] = nuevo;
+                    longitud++;
+                }
+                longitud++;
+            }
+            longitud = 0;
+            file.seek(0);
+            while (longitud < campos.length) {
+                if (longitud == campos.length - 1) {
+                    file.write(campos[longitud].getBytes());
+                    longitud++;
+                } else {
+                    file.write(campos[longitud].getBytes());
+                    file.write(",".getBytes());
+                    longitud++;
+                }
+            }
+            file.close();
+            line = null;
+            String newLine = null;
+            //String[] camposmeta;
+            String aux = new String();
+            int band = 0;
+            RandomAccessFile fileMeta = new RandomAccessFile("archivos/META_BD.csv", "rw");
+            FileReader fr = new FileReader("archivos/META_BD.csv");
+            BufferedReader br = new BufferedReader(fr);
+            line = "";
+            while ((line = br.readLine()) != null) {
+                String camposMeta[]=line.split(",");
+                //if(camposMeta[1].equals(nomTabla) && camposMeta[3].contains(campo)){
+                if (line.contains(nomTabla) && line.contains(campo)) {
+
+                    newLine = line.replaceAll(campo, nuevo);
+
+                    aux = aux + newLine + "\n";
+
+                } else {
+
+                    aux = aux + line + "\n";
+
+                }
+            }
+            fileMeta.close();
+            br.close();
+            fr.close();
+            RandomAccessFile fileNew = new RandomAccessFile("archivos/META_BD.csv", "rw");
+            fileNew.seek(0);
+            fileNew.writeBytes(aux);
+            fileNew.close();
+
+            for (int i = 0; i < LongitudesCampos.size(); i++) {
+
+                if (LongitudesCampos.get(i).getCamp().equals(campo) && LongitudesCampos.get(i).getNombre().equals(nomTabla)) {
+                    LongitudesCampos.get(i).setCamp(nuevo);
+                }
+            }
+            /////////////////////////////////////////
+
+            GestorArchivo.serializarGestorArchivo();
+            GestorRegistro.serializar_GestorRegistro();
+            ////////////////////////////////////////
+            JOptionPane.showMessageDialog(null, "Edicion Exitosa");
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(null, "Tabla o Campo no registrados.");
+            return false;
+        }
+    }
+
+    public static void guardarHistorial() throws IOException {
+        try (ObjectOutputStream output_historial = new ObjectOutputStream(new FileOutputStream("serializar/Principal_Historial.dat"))) {
+            output_historial.writeObject(historial);
+            output_historial.close();
+            System.out.println("Historial Serializado");
+        } catch (IOException x) {
+
+        }
+    }
+
+    
+    public void setJpane(){
+        JTextPane  txt = new JTextPane(doc);
+        txtEntradaComando=txt;
+        this.add(new JScrollPane(txtEntradaComando));
+        txtEntradaComando.setVisible(true);
+    }
+    
+    private int findLastNonWordChar (String text, int index) {
+        while (--index >= 0) {
+            if (String.valueOf(text.charAt(index)).matches("\\W")) {
+                break;
+            }
+        }
+        return index;
+    }
+
+    private int findFirstNonWordChar (String text, int index) {
+        while (index < text.length()) {
+            if (String.valueOf(text.charAt(index)).matches("\\W")) {
+                break;
+            }
+            index++;
+        }
+        return index;
+    }
+    
+    public void reconocerpalabras(){
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+        final StyleContext cont = StyleContext.getDefaultStyleContext();
+        final AttributeSet attr = cont.addAttribute(cont.getEmptySet(), StyleConstants.Foreground, Color.RED);
+        final AttributeSet attrBlack = cont.addAttribute(cont.getEmptySet(), StyleConstants.Foreground, Color.BLACK);
+        doc = new DefaultStyledDocument() {
+            
+            public void insertString (int offset, String str, AttributeSet a) throws BadLocationException {
+                super.insertString(offset, str, a);
+
+                String text = getText(0, getLength());
+                int before = findLastNonWordChar(text, offset);
+                if (before < 0) before = 0;
+                int after = findFirstNonWordChar(text, offset + str.length());
+                int wordL = before;
+                int wordR = before;
+
+                while (wordR <= after) {
+                    if (wordR == after || String.valueOf(text.charAt(wordR)).matches("\\W")) {
+                        if (text.substring(wordL, wordR).matches("(\\W)*(CREAR|TABLA|CAMPOS|CLAVE|LONGITUD|UNIR|POR|ELIMINAR|MODIFICAR|CAMPO|"
+                                + "REGISTRO|VALOR|SELECCIONAR|DE|DONDE)"))
+                            setCharacterAttributes(wordL, wordR - wordL, attr, false);
+                        else
+                            setCharacterAttributes(wordL, wordR - wordL, attrBlack, false);
+                        wordL = wordR;
+                    }
+                    wordR++;
+                }
+            }
+
+            public void remove (int offs, int len) throws BadLocationException {
+                super.remove(offs, len);
+
+                String text = getText(0, getLength());
+                int before = findLastNonWordChar(text, offs);
+                if (before < 0) before = 0;
+                int after = findFirstNonWordChar(text, offs);
+
+                if (text.substring(before, after).matches("(\\W)*(private|public|protected)")) {
+                    setCharacterAttributes(before, after - before, attr, false);
+                } else {
+                    setCharacterAttributes(before, after - before, attrBlack, false);
+                }
+            }
+        };
+    }
+
+    
+    
+    /**
+     * @param args the command line arguments
+     */
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem ComandCrearTab;
+    private javax.swing.JMenuItem ComandoCrearReg;
+    private javax.swing.JMenuItem ComandoElimReg;
+    private javax.swing.JMenuItem ComandoElimTab;
+    private javax.swing.JMenuItem ComandoJoin;
+    private javax.swing.JMenuItem ComandoModTab;
+    private javax.swing.JMenuItem ComandoModiReg;
+    private javax.swing.JMenuItem ComandoSelec;
+    private javax.swing.JButton btEjecutar;
+    private javax.swing.JButton btnMostrarTab;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tSalida;
+    private javax.swing.JLabel tiempos;
+    private javax.swing.JTextPane txtEntradaComando;
+    // End of variables declaration//GEN-END:variables
+}
